@@ -1,6 +1,6 @@
-const int sensorLeftPin = A1;
-const int sensorRightPin = A0;
-const int sensorMidPin = A2;
+const int sensorLeftPin = A2;
+const int sensorRightPin = A1;
+const int sensorMidPin = A3;
 
 const int boundaryValue = 550;
 
@@ -55,19 +55,21 @@ void loop() {
   
   if (sensorLeftValue > boundaryValue) {
     Serial.println("Found Line");
+    Serial.println(sensorLeftValue);
     leftMotor->setSpeed(0);
     rightMotor->setSpeed(40);
   }
 
   else if (sensorRightValue > boundaryValue) {
     Serial.println("Found Other Line");
+    Serial.println(sensorRightValue);
     leftMotor->setSpeed(40);
     rightMotor->setSpeed(0);
   }
   
   else {
     Serial.println("Go Straight");
-    leftMotor->setSpeed(10);  
-    rightMotor->setSpeed(10);
+    leftMotor->setSpeed(30);  
+    rightMotor->setSpeed(30);
   }
 }
