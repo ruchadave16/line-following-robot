@@ -6,7 +6,7 @@ const int boundaryValue = 550;
 
 int sensorLeftValue;
 int sensorRightValue;
-int speed_set = 30;
+int speed_set;
 
 #include <Adafruit_MotorShield.h>
 
@@ -40,15 +40,15 @@ void loop() {
   // put your main code here, to run repeatedly:
   sensorLeftValue = analogRead(sensorLeftPin);
   sensorRightValue = analogRead(sensorRightPin);
-//  sensorMidValue = analogRead(sensorMidValue);
 
-//  if ((sensorMidValue < boundaryValue) && (sensorLeftValue < boundaryValue) && (sensorRightValue < boundaryValue)) {
-//    leftMotor->run(FORWARD);
-//    rightMotor->run(BACKWARD);
-//
-//    leftMotor->setSpeed(20);
-//    rightMotor->setSpeed(20);
-//  }
+  if (Serial.available() > 0) {
+    speed_set = (Serial.parseInt());
+    if (speed_set == 0) {
+        speed_set = 30;
+    }
+  }
+    
+  Serial.println(speed_set);
 
   leftMotor->run(FORWARD);
   rightMotor->run(FORWARD);
@@ -57,13 +57,13 @@ void loop() {
     Serial.println("Found Line");
     Serial.println(sensorLeftValue);
     leftMotor->setSpeed(0);
-    rightMotor->setSpeed(speed_set + 10);
+    rightMotor->setSpeed(speed_set + 50);
   }
 
   else if (sensorRightValue > boundaryValue) {
     Serial.println("Found Other Line");
     Serial.println(sensorRightValue);
-    leftMotor->setSpeed(speed_set + 10);
+    leftMotor->setSpeed(speed_set + 50);
     rightMotor->setSpeed(0);
   }
   
@@ -71,9 +71,5 @@ void loop() {
     Serial.println("Go Straight");
     leftMotor->setSpeed(speed_set);  
     rightMotor->setSpeed(speed_set);
-  }
-  
-  if (Serial.available() > 0) {
-    speed_set = Serial.read();
   }
 }
