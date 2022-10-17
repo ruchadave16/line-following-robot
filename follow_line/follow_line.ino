@@ -4,6 +4,7 @@ const int sensorMidPin = A3;
 
 const int boundaryValue = 550;
 
+int curr_serial_input;
 int sensorLeftValue;
 int sensorRightValue;
 int speed_set;
@@ -42,9 +43,9 @@ void loop() {
   sensorRightValue = analogRead(sensorRightPin);
 
   if (Serial.available() > 0) {
-    speed_set = (Serial.parseInt());
-    if (speed_set == 0) {
-        speed_set = 30;
+    curr_serial_input = (Serial.parseInt());
+    if (curr_serial_input != 0) {
+        speed_set = curr_serial_input;
     }
   }
     
