@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name "arduino_with_motor_shield")(type "KiCad")(uri "${KIPRJMOD}/arduino_motorshield.kicad_sym")(options "")(descr ""))
+)
