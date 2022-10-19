@@ -2,12 +2,15 @@ const int sensorLeftPin = A2;
 const int sensorRightPin = A1;
 const int sensorMidPin = A3;
 
-const int boundaryValue = 550;
+const int boundaryValue = 510;
 
-int curr_serial_input;
+int currSerialInput;
 int sensorLeftValue;
 int sensorRightValue;
-int speed_set;
+int speedSet;
+int leftWheelSpeed;
+int rightWheelSpeed;
+long startTime;
 
 #include <Adafruit_MotorShield.h>
 
@@ -35,6 +38,8 @@ void setup() {
 
   leftMotor->run(RELEASE);
   rightMotor->run(RELEASE);
+
+  startTime = millis();
 }
 
 void loop() {
@@ -43,34 +48,46 @@ void loop() {
   sensorRightValue = analogRead(sensorRightPin);
 
   if (Serial.available() > 0) {
-    curr_serial_input = (Serial.parseInt());
-    if (curr_serial_input != 0) {
-        speed_set = curr_serial_input;
+    currSerialInput = (Serial.parseInt());
+    if (currSerialInput != 0) {
+        speedSet = currSerialInput;
     }
   }
-    
-  Serial.println(speed_set);
-
-  leftMotor->run(FORWARD);
-  rightMotor->run(FORWARD);
+  if (sensorLeftValue > boundaryValue && sensorRightValue > boundaryValue) {
+    leftWheelSpeed = 0;
+    rightWheelSpeed = 0;
+  }
   
-  if (sensorLeftValue > boundaryValue) {
-    Serial.println("Found Line");
-    Serial.println(sensorLeftValue);
-    leftMotor->setSpeed(0);
-    rightMotor->setSpeed(speed_set + 50);
+  else if (sensorLeftValue > boundaryValue) {
+    leftMotor->run(BACKWARD);
+    rightMotor->run(FORWARD);
+    leftWheelSpeed = speedSet;
+    rightWheelSpeed = speedSet + 0;
+//    leftMotor->setSpeed(0);
+//    rightMotor->setSpeed(speedSet + 100);
   }
 
   else if (sensorRightValue > boundaryValue) {
-    Serial.println("Found Other Line");
-    Serial.println(sensorRightValue);
-    leftMotor->setSpeed(speed_set + 50);
-    rightMotor->setSpeed(0);
+    leftMotor->run(FORWARD);
+    rightMotor->run(BACKWARD);
+    leftWheelSpeed = speedSet + 0;
+    rightWheelSpeed = speedSet;
+//    leftMotor->setSpeed(speedSet + 100);
+//    rightMotor->setSpeed(0);
   }
   
   else {
-    Serial.println("Go Straight");
-    leftMotor->setSpeed(speed_set);  
-    rightMotor->setSpeed(speed_set);
+    leftMotor->run(FORWARD);
+    rightMotor->run(FORWARD);
+    leftWheelSpeed = speedSet;
+    rightWheelSpeed = speedSet;
   }
+
+  leftMotor->setSpeed(leftWheelSpeed);
+  rightMotor->setSpeed(rightWheelSpeed);
+
+  Serial.println("leftWheel " + String(leftWheelSpeed) + " " + String(millis() - startTime));
+  Serial.println("rightWheel " + String(rightWheelSpeed) + " " + String(millis() - startTime));
+  Serial.println("leftIR " + String(sensorLeftValue) + " " + String(millis() - startTime));
+  Serial.println("rightIR " + String(sensorRightValue) + " " + String(millis() - startTime));
 }
