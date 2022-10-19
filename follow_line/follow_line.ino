@@ -9,7 +9,6 @@ int sensorRightValue;
 int speedSet;
 int leftWheelSpeed;
 int rightWheelSpeed;
-long startTime;
 String leftDir;
 String rightDir;
 
@@ -20,7 +19,6 @@ Adafruit_DCMotor *leftMotor = AFMS.getMotor(3);
 Adafruit_DCMotor *rightMotor = AFMS.getMotor(2);
 
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(9600);
   if (!AFMS.begin()) {
     Serial.println("Check wiring");
@@ -39,8 +37,7 @@ void setup() {
   leftMotor->run(RELEASE);
   rightMotor->run(RELEASE);
 
-  startTime = millis();
-  speedSet = 30;
+  speedSet = 0;
 }
 
 void loop() {
@@ -77,8 +74,6 @@ void loop() {
     rightDir = 'b';
     leftWheelSpeed = speedSet + 0;
     rightWheelSpeed = speedSet;
-    //    leftMotor->setSpeed(speedSet + 100);
-    //    rightMotor->setSpeed(0);
   }
 
   else {
@@ -93,8 +88,8 @@ void loop() {
   leftMotor->setSpeed(leftWheelSpeed);
   rightMotor->setSpeed(rightWheelSpeed);
 
-  Serial.println("leftWheel " + leftDir + " " + String(leftWheelSpeed) + " " + String(millis() - startTime));
-  Serial.println("rightWheel " + rightDir + " " + String(rightWheelSpeed) + " " + String(millis() - startTime));
-  Serial.println("leftIR " + String(sensorLeftValue) + " " + String(millis() - startTime));
-  Serial.println("rightIR " + String(sensorRightValue) + " " + String(millis() - startTime));
+  Serial.println("leftWheel " + leftDir + " " + String(leftWheelSpeed));
+  Serial.println("rightWheel " + rightDir + " " + String(rightWheelSpeed));
+  Serial.println("leftIR " + String(sensorLeftValue));
+  Serial.println("rightIR " + String(sensorRightValue));
 }
