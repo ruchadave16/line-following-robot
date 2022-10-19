@@ -1,3 +1,4 @@
+import time
 import matplotlib.pyplot as plt
 import numpy as np
 import serial
@@ -14,22 +15,23 @@ right_motor_values = []
 left_ir_values = []
 right_ir_values = []
 
+start_time = time.time()
+
 try:
     while True:
         try:
             data = serial_port.readline().decode()
             data = data.split(' ')
-            print(data)
             if data[0] == 'leftWheel':
                 vel = int(data[2]) if data[1] == 'f' else -int(data[2])
-                left_motor_values.append([vel, int(data[-1][:-4])])
+                left_motor_values.append([vel, time.time() - start_time])
             if data[0] == 'rightWheel':
                 vel = int(data[2]) if data[1] == 'f' else -int(data[2])
-                right_motor_values.append([vel, int(data[-1][:-4])])
+                right_motor_values.append([vel, time.time() - start_time])
             if data[0] == 'leftIR':
-                left_ir_values.append([int(data[1]), int(data[2][:-4])])
+                left_ir_values.append([int(data[1]), time.time() - start_time])
             if data[0] == 'rightIR':
-                right_ir_values.append([int(data[1]), int(data[2][:-4])])
+                right_ir_values.append([int(data[1]), time.time() - start_time])
         except UnicodeDecodeError and ValueError:
             continue
 except KeyboardInterrupt:
@@ -39,11 +41,11 @@ except KeyboardInterrupt:
     right_motor_values = np.array(right_motor_values)
     fig, ax1 = plt.subplots()
     ax2 = ax1.twinx()
-    ax1.plot(left_motor_values[:,1]/255, left_motor_values[:,0], 'bx', label="Left Motor Speed")
-    ax1.plot(right_motor_values[:,1]/255, right_motor_values[:,0], 'g.', label="RIght Motor Speed")
-    ax2.plot(left_ir_values[:,1]*5/1024, left_ir_values[:,0], 'rx', label="Left IR Sensor")
-    ax2.plot(right_ir_values[:,1]*5/1024, right_ir_values[:,0], 'c.', label="Right IR Sensor")
-    ax2.plot([0, left_ir_values[-1,0]], [510, 510], 'k-')
+    ax1.plot(left_motor_values[:,1], left_motor_values[:,0]/255, 'bx', label="Left Motor Speed")
+    ax1.plot(right_motor_values[:,1], right_motor_values[:,0]/255, 'g.', label="RIght Motor Speed")
+    ax2.plot(left_ir_values[:,1], left_ir_values[:,0]*5/1024, 'rx', label="Left IR Sensor")
+    ax2.plot(right_ir_values[:,1], right_ir_values[:,0]*5/1024, 'c.', label="Right IR Sensor")
+    ax2.plot([left_ir_values[0,1], left_ir_values[-1,1]], [510*5/1024, 510*5/1024], 'k-')
     ax1.set_xlabel('Time (s)')
     ax1.set_ylabel('Percent of Maximum Wheel Speed (%)')
     ax2.set_ylabel('Voltage (V)')
